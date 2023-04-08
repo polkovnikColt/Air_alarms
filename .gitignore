@@ -2,3 +2,9 @@
 /data/*/raw/*
 .DS_Store
 **/.DS_Store
+sparse.npz
+y.csv
+alarms_env
+__pycache__
+data/alarms
+data/isw/*.pkl
