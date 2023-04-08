@@ -1,11 +1,14 @@
 import re
 import numpy as np
 
+import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 from num2words import num2words
+
+nltk.download('punkt')
 
 
 def remove_one_letter_word(data):
