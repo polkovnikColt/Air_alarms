@@ -37,25 +37,25 @@ for train_index, test_index in tss.split(df_all_data):
 # X_train, X_test, y_train, y_test = train_test_split(df_all_data, y, test_size=0.2, random_state=1, shuffle=True)
 
 # LogisticRegresion
-LR = GridSearchCV(LogisticRegression(), param_grid_LR, refit = True, verbose = 3, n_jobs=-1)
-LR.fit(X_train, y_train)
-filename = 'data/models/LR.pkl'
-pickle.dump(LR, open(filename, 'wb'))
-Y_pred = LR.predict(X_test)
-accuracy = metrics.accuracy_score(y_test, Y_pred)
-fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred)
-auc_list = round(metrics.auc(fpr, tpr),2)
-cm_list =  confusion_matrix(y_test, Y_pred)
+# LR = GridSearchCV(LogisticRegression(), param_grid_LR, refit = True, verbose = 3, n_jobs=-1)
+# LR.fit(X_train, y_train)
+# filename = 'data/models/LR.pkl'
+# pickle.dump(LR, open(filename, 'wb'))
+# Y_pred = LR.predict(X_test)
+# accuracy = metrics.accuracy_score(y_test, Y_pred)
+# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred)
+# auc_list = round(metrics.auc(fpr, tpr),2)
+# cm_list =  confusion_matrix(y_test, Y_pred)
 
-fig = plt.figure(figsize = (15,15))
-sub = fig.add_subplot(2,3,1).set_title("LogisticRegression")
-cm_plot = sns.heatmap(cm_list, annot=True, cmap = "Blues_r")
-cm_plot.set_xlabel("Predicted values")
-cm_plot.set_ylabel("Actual values")
-plt.show()
+# fig = plt.figure(figsize = (15,15))
+# sub = fig.add_subplot(2,3,1).set_title("LogisticRegression")
+# cm_plot = sns.heatmap(cm_list, annot=True, cmap = "Blues_r")
+# cm_plot.set_xlabel("Predicted values")
+# cm_plot.set_ylabel("Actual values")
+# plt.show()
 
-report = classification_report(y_test, Y_pred, target_names=["Actual", "Pred"])
-print(report)
+# report = classification_report(y_test, Y_pred, target_names=["Actual", "Pred"])
+# print(report)
 
 
 # DecisionTree
@@ -81,31 +81,31 @@ print(report)
 #     pickle.dump(NB, DTC)
 
 # RFC
-# rfc = RandomForestClassifier(n_estimators=10)
-# rfc.fit(X_train, y_train)
-# Y_pred_rfc = rfc.predict(X_test)
-# accuracy_rfc = metrics.accuracy_score(y_test, Y_pred_rfc)
-# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_rfc)
-# auc_list_rfc = round(metrics.auc(fpr, tpr),2)
-# cm_list_rfc =  confusion_matrix(y_test, Y_pred_rfc)
+rfc = RandomForestClassifier(n_estimators=10)
+rfc.fit(X_train, y_train)
+Y_pred_rfc = rfc.predict(X_test)
+accuracy_rfc = metrics.accuracy_score(y_test, Y_pred_rfc)
+fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_rfc)
+auc_list_rfc = round(metrics.auc(fpr, tpr),2)
+cm_list_rfc =  confusion_matrix(y_test, Y_pred_rfc)
 
-# with open("./data/models/RFC.pkl", "wb") as RFC:
-#     pickle.dump(rfc, RFC)
+with open("./data/models/RFC.pkl", "wb") as RFC:
+    pickle.dump(rfc, RFC)
 
-# fig2 = plt.figure(figsize = (15,15))
-# sub = fig2.add_subplot(2,3,1).set_title("RFC")
-# cm_plot2 = sns.heatmap(cm_list_rfc, annot=True, cmap = "Blues_r")
-# cm_plot2.set_xlabel("Predicted values")
-# cm_plot2.set_ylabel("Actual values")
-# plt.show()
+fig2 = plt.figure(figsize = (15,15))
+sub = fig2.add_subplot(2,3,1).set_title("RFC")
+cm_plot2 = sns.heatmap(cm_list_rfc, annot=True, cmap = "Blues_r")
+cm_plot2.set_xlabel("Predicted values")
+cm_plot2.set_ylabel("Actual values")
+plt.show()
 
-# report = classification_report(y_test, Y_pred_rfc, target_names=["Actual", "Pred"])
-# print(report)
+report = classification_report(y_test, Y_pred_rfc, target_names=["Actual", "Pred"])
+print(report)
 
 # #SGD
 # sgd = SGDClassifier(loss="hinge", penalty="l2", max_iter=5)
 # sgd.fit(X_train, y_train)
-# Y_pred_sgd = RFC.predict(X_test)
+# Y_pred_sgd = sgd.predict(X_test)
 # accuracy_sgd = metrics.accuracy_score(y_test, Y_pred_sgd)
 # fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_sgd)
 # auc_list_sgd = round(metrics.auc(fpr, tpr),2)
