@@ -97,4 +97,7 @@ fig2.show()
 report = classification_report(y_test, Y_pred_svm, target_names=["Actual", "Pred"])
 print(report)
 
+with open("./data/models/SVM.pkl", "wb") as SVM:
+    pickle.dump(clf, SVM)
+
 
