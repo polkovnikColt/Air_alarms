@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import SGDClassifier
 from sklearn.svm import SVC
 from sklearn import metrics 
 from sklearn.model_selection import TimeSeriesSplit
@@ -76,6 +78,45 @@ fig1.show()
 report = classification_report(y_test, Y_pred_NB, target_names=["Actual", "Pred"])
 print(report)
 
+#RFC
+RFC = RandomForestClassifier(n_estimators=10)
+RFC.fit(X_train, y_train)
+Y_pred_rfc = RFC.predict(X_test)
+accuracy_rfc = metrics.accuracy_score(y_test, Y_pred_rfc)
+fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_rfc)
+auc_list_rfc = round(metrics.auc(fpr, tpr),2)
+cm_list_rfc =  confusion_matrix(y_test, Y_pred_rfc)
+
+fig2 = plt.figure(figsize = (15,15))
+sub = fig2.add_subplot(2,3,1).set_title("RFC")
+cm_plot2 = sns.heatmap(cm_list_rfc, annot=True, cmap = "Blues_r")
+cm_plot2.set_xlabel("Predicted values")
+cm_plot2.set_ylabel("Actual values")
+cm_plot2.show()
+fig2.show()
+
+report = classification_report(y_test, Y_pred_rfc, target_names=["Actual", "Pred"])
+print(report)
+
+#SGD
+sgd = SGDClassifier(loss="hinge", penalty="l2", max_iter=5)
+sgd.fit(X_train, y_train)
+Y_pred_sgd = RFC.predict(X_test)
+accuracy_sgd = metrics.accuracy_score(y_test, Y_pred_sgd)
+fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_sgd)
+auc_list_sgd = round(metrics.auc(fpr, tpr),2)
+cm_list_sgd =  confusion_matrix(y_test, Y_pred_sgd)
+
+fig2 = plt.figure(figsize = (15,15))
+sub = fig2.add_subplot(2,3,1).set_title("sgd")
+cm_plot2 = sns.heatmap(cm_list_sgd, annot=True, cmap = "Blues_r")
+cm_plot2.set_xlabel("Predicted values")
+cm_plot2.set_ylabel("Actual values")
+cm_plot2.show()
+fig2.show()
+
+report = classification_report(y_test, Y_pred_sgd, target_names=["Actual", "Pred"])
+print(report)
 
 #SVM
 clf = SVC()
@@ -97,4 +138,5 @@ fig2.show()
 report = classification_report(y_test, Y_pred_svm, target_names=["Actual", "Pred"])
 print(report)
 
-
+with open("./data/models/SVM.pkl", "wb") as SVM:
+    pickle.dump(clf, SVM)
