@@ -7,17 +7,50 @@ import scipy
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn import metrics 
+from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import pickle
 
-df_all_data = scipy.sparse.load_npz('/home/pasha/Study/API_Design/Air_alarms/sparse.npz')[:1000] 
-y = pd.read_csv('/home/pasha/Study/API_Design/Air_alarms/y.csv')["is_alarm"][:1000] 
+param_grid_LR = {"C": [0.1, 1, 100], "penalty": ['l1', 'l2', 'elasticnet', None], 'random_state': [0,1,10], 
+                 'tol': [0.1, 1, 100]}
 
-X_train, X_test, y_train, y_test = train_test_split(df_all_data, y, test_size=0.2, random_state=1, shuffle=True)
+df_all_data = scipy.sparse.load_npz('/home/pasha/Study/API_Design/Air_alarms/sparse.npz')
+y = pd.read_csv('/home/pasha/Study/API_Design/Air_alarms/y.csv')["is_alarm"]
 
+tss = TimeSeriesSplit(n_splits = 5)
+for train_index, test_index in tss.split(df_all_data):
+    X_train, X_test = df_all_data[train_index], df_all_data[test_index]
+    y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+
+#X_train, X_test, y_train, y_test = train_test_split(df_all_data, y, test_size=0.2, random_state=1, shuffle=True)
+
+#LogisticRegresion
+LR = GridSearchCV(LogisticRegression(), param_grid, refit = True, verbose = 3,n_jobs=-1)
+LR.fit(X_train, y_train)
+filename = 'finalized_model_LR.sav'
+pickle.dump(LR, open(filename, 'wb'))
+Y_pred = LR.predict(X_test)
+accuracy = metrics.accuracy_score(y_test, Y_pred)
+fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred)
+auc_list = round(metrics.auc(fpr, tpr),2)
+cm_list =  confusion_matrix(y_test, Y_pred)
+
+fig = plt.figure(figsize = (15,15))
+sub = fig.add_subplot(2,3,1).set_title("LogisticRegression")
+cm_plot = sns.heatmap(cm_list, annot=True, cmap = "Blues_r")
+cm_plot.set_xlabel("Predicted values")
+cm_plot.set_ylabel("Actual values")
+
+report = classification_report(y_test, Y_pred, target_names=["Actual", "Pred"])
+report
+
+
+#DecisionTree
 NB = DecisionTreeClassifier()
 NB.fit(np.asarray(X_train.todense()), y_train)
 Y_pred_NB = NB.predict(X_test)
