@@ -17,9 +17,12 @@ import pickle
 
 param_grid_LR = {"C": [0.1, 1, 100], "penalty": ['l1', 'l2', 'elasticnet', None], 'random_state': [0,1,10], 
                  'tol': [0.1, 1, 100]}
+                 
+data_path = ''    
+y_path = ''             
 
-df_all_data = scipy.sparse.load_npz('/home/pasha/Study/API_Design/Air_alarms/sparse.npz')
-y = pd.read_csv('/home/pasha/Study/API_Design/Air_alarms/y.csv')["is_alarm"]
+df_all_data = scipy.sparse.load_npz(data_path)
+y = pd.read_csv(y_path)["is_alarm"]
 
 tss = TimeSeriesSplit(n_splits = 5)
 for train_index, test_index in tss.split(df_all_data):
@@ -45,9 +48,11 @@ sub = fig.add_subplot(2,3,1).set_title("LogisticRegression")
 cm_plot = sns.heatmap(cm_list, annot=True, cmap = "Blues_r")
 cm_plot.set_xlabel("Predicted values")
 cm_plot.set_ylabel("Actual values")
+cm_plot.show()
+fig.show()
 
 report = classification_report(y_test, Y_pred, target_names=["Actual", "Pred"])
-report
+print(report)
 
 
 #DecisionTree
@@ -64,6 +69,8 @@ sub = fig1.add_subplot(2,3,1).set_title("GaussianNB")
 cm_plot1 = sns.heatmap(cm_list_NB, annot=True, cmap = "Blues_r")
 cm_plot1.set_xlabel("Predicted values")
 cm_plot1.set_ylabel("Actual values")
+cm_plot1.show()
+fig1.show()
 
 report = classification_report(y_test, Y_pred_NB, target_names=["Actual", "Pred"])
 print(report)
