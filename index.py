@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn import metrics 
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import classification_report
@@ -74,3 +75,26 @@ fig1.show()
 
 report = classification_report(y_test, Y_pred_NB, target_names=["Actual", "Pred"])
 print(report)
+
+
+#SVM
+clf = SVC()
+clf.fit(X_train, y_train)
+Y_pred_svm = clf.predict(X_test)
+accuracy_svm = metrics.accuracy_score(y_test, Y_pred_svm)
+fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_svm)
+auc_list_svm = round(metrics.auc(fpr, tpr),2)
+cm_list_svm =  confusion_matrix(y_test, Y_pred_svm)
+
+fig2 = plt.figure(figsize = (15,15))
+sub = fig2.add_subplot(2,3,1).set_title("SVM")
+cm_plot2 = sns.heatmap(cm_list_svm, annot=True, cmap = "Blues_r")
+cm_plot2.set_xlabel("Predicted values")
+cm_plot2.set_ylabel("Actual values")
+cm_plot2.show()
+fig2.show()
+
+report = classification_report(y_test, Y_pred_svm, target_names=["Actual", "Pred"])
+print(report)
+
+
