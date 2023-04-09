@@ -8,3 +8,5 @@ alarms_env
 __pycache__
 data/alarms
 data/isw/*.pkl
+*.env
+data/prediction
