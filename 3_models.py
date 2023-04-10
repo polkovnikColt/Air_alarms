@@ -27,8 +27,8 @@ param_grid_RFC = {'n_estimators': [0, 2, 5, 10],"criterion": ["gini", "entropy",
 param_grid_MLP = {"activation": ["identity", "logistic", "tanh", "relu"], "solver": ['lbfgs', 'sgd', 'adam'], "alpha": [0.0001, 0.001, 0.05, 0.1], 
 "max_iter": [200, 300, 400, 500]}
 
-data_path = './sparse.npz'
-y_path = 'y.csv'
+data_path = '/home/vlad/Документы/sparse.npz'
+y_path = '/home/vlad/Документы/y.csv'
 
 df_all_data = scipy.sparse.load_npz(data_path)
 y = pd.read_csv(y_path)["is_alarm"]
@@ -66,18 +66,19 @@ for train_index, test_index in tss.split(df_all_data):
 # DecisionTree
 # NB = DecisionTreeClassifier()
 # NB.fit(np.asarray(X_train.todense()), y_train)
-# Y_pred_NB = NB.predict(X_test)
-# accuracy_NB = metrics.accuracy_score(y_test, Y_pred_NB)
-# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_NB)
-# auc_list_NB = round(metrics.auc(fpr, tpr),2)
-# cm_list_NB =  confusion_matrix(y_test, Y_pred_NB)
+NB = pd.read_pickle("/home/vlad/Документы/material_for_practice/MP-1/SOFTWARE_DEVELOPMENT/Air_alarms/data/models/DTC.pkl")
+Y_pred_NB = NB.predict(X_test)
+accuracy_NB = metrics.accuracy_score(y_test, Y_pred_NB)
+fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_NB)
+auc_list_NB = round(metrics.auc(fpr, tpr),2)
+cm_list_NB =  confusion_matrix(y_test, Y_pred_NB)
 
-# fig1 = plt.figure(figsize = (15,15))
-# sub = fig1.add_subplot(2,3,1).set_title("GaussianNB")
-# cm_plot1 = sns.heatmap(cm_list_NB, annot=True, cmap = "Blues_r")
-# cm_plot1.set_xlabel("Predicted values")
-# cm_plot1.set_ylabel("Actual values")
-# plt.show()
+fig1 = plt.figure(figsize = (15,15))
+sub = fig1.add_subplot(2,3,1).set_title("DecisionTree")
+cm_plot1 = sns.heatmap(cm_list_NB, annot=True, cmap = "Blues_r")
+cm_plot1.set_xlabel("Predicted values")
+cm_plot1.set_ylabel("Actual values")
+plt.show()
 
 # report = classification_report(y_test, Y_pred_NB, target_names=["Actual", "Pred"])
 # print(report)
