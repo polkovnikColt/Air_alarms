@@ -22,6 +22,10 @@ import pickle
 
 param_grid_LR = {"C": [0.1, 1, 100], "penalty": ['l1', 'l2', 'elasticnet', None], 'random_state': [0, 1, 10],
                  'tol': [0.1, 1, 100]}
+param_grid_RFC = {'n_estimators': [0, 2, 5, 10],"criterion": ["gini", "entropy", "log_loss"],"max_features": ["sqrt", "log2", None]}
+
+param_grid_MLP = {"activation": ["identity", "logistic", "tanh", "relu"], "solver": ['lbfgs', 'sgd', 'adam'], "alpha": [0.0001, 0.001, 0.05, 0.1], 
+"max_iter": [200, 300, 400, 500]}
 
 data_path = './sparse.npz'
 y_path = 'y.csv'
@@ -82,26 +86,26 @@ for train_index, test_index in tss.split(df_all_data):
 #     pickle.dump(NB, DTC)
 
 # RFC
-rfc = RandomForestClassifier(n_estimators=10)
-rfc.fit(X_train, y_train)
-Y_pred_rfc = rfc.predict(X_test)
-accuracy_rfc = metrics.accuracy_score(y_test, Y_pred_rfc)
-fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_rfc)
-auc_list_rfc = round(metrics.auc(fpr, tpr),2)
-cm_list_rfc =  confusion_matrix(y_test, Y_pred_rfc)
+# rfc = GridSearchCV(RandomForestClassifier(), param_grid_RFC, refit = True, verbose = 3, n_jobs=-1)
+# rfc.fit(X_train, y_train)
+# Y_pred_rfc = rfc.predict(X_test)
+# accuracy_rfc = metrics.accuracy_score(y_test, Y_pred_rfc)
+# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_rfc)
+# auc_list_rfc = round(metrics.auc(fpr, tpr),2)
+# cm_list_rfc =  confusion_matrix(y_test, Y_pred_rfc)
 
-with open("./data/models/RFC.pkl", "wb") as RFC:
-    pickle.dump(rfc, RFC)
+# with open("./data/models/RFC.pkl", "wb") as RFC:
+#     pickle.dump(rfc, RFC)
 
-fig2 = plt.figure(figsize = (15,15))
-sub = fig2.add_subplot(2,3,1).set_title("RFC")
-cm_plot2 = sns.heatmap(cm_list_rfc, annot=True, cmap = "Blues_r")
-cm_plot2.set_xlabel("Predicted values")
-cm_plot2.set_ylabel("Actual values")
-plt.show()
+# fig2 = plt.figure(figsize = (15,15))
+# sub = fig2.add_subplot(2,3,1).set_title("RFC")
+# cm_plot2 = sns.heatmap(cm_list_rfc, annot=True, cmap = "Blues_r")
+# cm_plot2.set_xlabel("Predicted values")
+# cm_plot2.set_ylabel("Actual values")
+# plt.show()
 
-report = classification_report(y_test, Y_pred_rfc, target_names=["Actual", "Pred"])
-print(report)
+# report = classification_report(y_test, Y_pred_rfc, target_names=["Actual", "Pred"])
+# print(report)
 
 # #SGD
 # sgd = SGDClassifier(loss="hinge", penalty="l2", max_iter=5)
@@ -146,7 +150,7 @@ print(report)
 
 
 # Multi-layer Perceptron
-# clf = MLPClassifier(activation='relu', solver='adam', learning_rate='adaptive', random_state=1)
+# clf = GridSearchCV(MLPClassifier(), param_grid_MLP, refit = True, verbose = 3, n_jobs=-1)
 # clf.fit(X_train, y_train)
 # Y_pred_MLP = clf.predict(X_test)
 # accuracy_MLP = metrics.accuracy_score(y_test, Y_pred_MLP)
