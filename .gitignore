@@ -6,7 +6,7 @@ sparse.npz
 y.csv
 alarms_env
 __pycache__
-data/alarms
+data/**/alarms.csv
 data/isw/*.pkl
 *.env
 data/prediction

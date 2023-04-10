@@ -9,6 +9,8 @@ from nltk.stem import WordNetLemmatizer
 from num2words import num2words
 
 nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
 
 
 def remove_one_letter_word(data):
@@ -92,8 +94,33 @@ def remove_url_from_string(data):
 
     new_text = ""
     for word in words:
-        word = re.sub(r'^https?:\/\/.*[\r\n]*', '', str(word), flags=re.MULTILINE)
-        word = re.sub(r'^http?:\/\/.*[\r\n]*', '', str(word), flags=re.MULTILINE)
+        word = re.sub(r'^https?:\/\/.*[\r\n]*',
+                      '', str(word), flags=re.MULTILINE)
+        word = re.sub(r'^http?:\/\/.*[\r\n]*', '',
+                      str(word), flags=re.MULTILINE)
 
         new_text = new_text + " " + word
     return new_text
+
+
+def text_preprocess(data, word_root_algo="lemm"):
+    data = remove_one_letter_word(data)
+    data = remove_url_from_string(data)
+    data = convert_lower_case(data)
+    data = remove_punctuation(data)
+    data = remove_apostrophe(data)
+    data = remove_stop_words(data)
+    data = convert_numbers(data)
+    data = stemming(data)
+    data = remove_punctuation(data)
+    data = convert_numbers(data)
+
+    if word_root_algo == "lemm":
+        data = lemmatizing(data)
+    else:
+        data = stemming(data)
+
+    data = remove_punctuation(data)
+    data = remove_stop_words(data)
+
+    return data
