@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 
 def remove_header_content(page_html, debug=False):
-    html = BeautifulSoup(page_html)
+    html = BeautifulSoup(page_html, features="html.parser")
     paragraphs = html.findAll("p")
 
     for line in paragraphs:
@@ -22,7 +22,7 @@ def remove_header_content(page_html, debug=False):
 
 
 def remove_links_and_references(page_html, debug=False):
-    html = BeautifulSoup(page_html)
+    html = BeautifulSoup(page_html, features="html.parser")
     paragraphs = html.find_all(["div", "p"])
 
     found_hr = False
@@ -71,7 +71,7 @@ def remove_links_and_references(page_html, debug=False):
 
 
 def remove_images_and_links(page_html, debug=False):
-    html = BeautifulSoup(page_html)
+    html = BeautifulSoup(page_html, features="html.parser")
 
     images = html.findAll("img")
     for img in images:
@@ -85,7 +85,7 @@ def remove_images_and_links(page_html, debug=False):
 
 
 def remove_repeated_stuff(page_html, debug=False):
-    html = BeautifulSoup(page_html)
+    html = BeautifulSoup(page_html, features="html.parser")
     paragraphs = html.findAll("p")
 
     prefixes = ["Note: ISW does not ", "Satellite image ", "Appendix "]
@@ -107,5 +107,5 @@ def preprocess_page_html(page_html, debug=False):
     page_html = remove_images_and_links(page_html, debug)
     page_html = remove_repeated_stuff(page_html, debug)
 
-    html = BeautifulSoup(page_html)
+    html = BeautifulSoup(page_html, features="html.parser")
     return html.text
