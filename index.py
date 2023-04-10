@@ -10,6 +10,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import SGDClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 from sklearn import metrics
@@ -143,6 +144,26 @@ print(report)
 # cm_plot4.set_ylabel("Actual values")
 # plt.show()
 
+
+# Multi-layer Perceptron
+# clf = MLPClassifier(activation='relu', solver='adam', learning_rate='adaptive', random_state=1)
+# clf.fit(X_train, y_train)
+# Y_pred_MLP = clf.predict(X_test)
+# accuracy_MLP = metrics.accuracy_score(y_test, Y_pred_MLP)
+# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_MLP)
+# auc_list_MLP = round(metrics.auc(fpr, tpr), 2)
+# cm_list_MLP = confusion_matrix(y_test, Y_pred_MLP)
+
+# with open("./data/models/MLP.pkl", "wb") as MLP:
+#     pickle.dump(clf, MLP)
+
+# fig5 = plt.figure(figsize=(15, 15))
+# sub = fig5.add_subplot(2, 3, 1).set_title("Multi-Layer Perceptron")
+# cm_plot5 = sns.heatmap(cm_list_MLP, annot=True, cmap="Blues_r")
+# cm_plot5.set_xlabel("Predicted values")
+# cm_plot5.set_ylabel("Actual values")
+# plt.show()
+
 # report = classification_report(
-#     y_test, Y_pred_svm, target_names=["Actual", "Pred"])
+#     y_test, Y_pred_MLP, target_names=["Actual", "Pred"])
 # print(report)
