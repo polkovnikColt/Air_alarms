@@ -2,48 +2,55 @@ import requests
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-import json
 
 load_dotenv()
 
-# Define endpoint parameters
-BASE_URL = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline'
-API_KEY = os.getenv('WEATHER_API_KEY')
+BASE_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline"
+API_KEY = os.getenv("WEATHER_API_KEY")
+
 
 def get_weather_json(location, date_str):
-	ts = datetime.strptime(date_str, "%Y-%m-%d")
-	ts = int(ts.replace(minute=0, second=0, microsecond=0).utcnow().timestamp())
-	ts_plus_12hours = ts + 3600 * 12
-	# Construct API URL
-	url = f"{BASE_URL}/{location}/{ts}/{ts_plus_12hours}?key={API_KEY}"
-	print(url)
+    url = f"{BASE_URL}/{location}/{date_str}?unitGroup=metric"
+    print(url)
+    url += f"&key={API_KEY}"
 
-	# Send GET request to API endpoint
-	# response = requests.get(url)
-	headers = {
-			'Content-Type': "application/json"
-			}
-	response = requests.request("GET", url, headers=headers, data={})
-	response.raise_for_status()
-	json_data = response.json()
-	weather = json_data["days"]
-	for i in weather:
-			weatherHours = i["hours"]
-			json_string = json.dumps(weatherHours)
-			data = json.loads(json_string)
+    headers = {"Content-Type": "application/json"}
+    response = requests.request("GET", url, headers=headers, data={})
+    response.raise_for_status()
 
-	# filter the list using a condition
-			filtered_list = [d for d in data if d["datetimeEpoch"] >= ts and d['datetimeEpoch'] <= ts_plus_12hours]
+    if response.status_code != 200:
+        raise Exception(f"Error getting weather: {response.status_code}")
 
-	# convert the filtered list back to JSON
-			json_result = json.dumps(filtered_list)
-			i["hours"] = json_result
-	json_data["days"] = weather
+    json_data = response.json()
+    return json_data
 
-	# Check response status code
-	if response.status_code == 200:
-			# Print response content
-			return json_data
-	else:
-			# Print error message
-			print(f"Error: {response.status_code}")
+
+def get_hourly_weather_json(location, date_str):
+    json_data = get_weather_json(location, date_str)
+    result = []
+
+    city_data = {
+        "city_latitude": json_data["latitude"],
+        "city_longitude": json_data["longitude"],
+        "city_resolvedAddress": json_data["resolvedAddress"],
+        "city_address": json_data["address"],
+        "city_timezone": json_data["timezone"],
+        "city_tzoffset": json_data["tzoffset"],
+    }
+
+    day_data = { "day_severerisk": 10 }
+    for attribute, value in json_data["days"][0].items():
+        if (attribute != "hours"):
+            day_data[f"day_{attribute}"] = value
+
+    for hour in json_data["days"][0]["hours"]:
+        hour_data = { "hour_severerisk": 10 }
+        hour_data.update(city_data)
+        hour_data.update(day_data)
+
+        for attribute, value in hour.items():
+            hour_data[f"hour_{attribute}"] = value
+
+        result.append(hour_data)
+
+    return result
