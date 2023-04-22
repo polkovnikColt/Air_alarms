@@ -10,3 +10,4 @@ data/**/alarms.csv
 data/isw/*.pkl
 *.env
 data/prediction
+data/alarms
