@@ -174,6 +174,9 @@ def get_isw_report_html(date_str, find_latest_if_not_available = False, debug = 
 			if debug:
 				print(f"ISW report for {date_str} is available. Saving...")
 
+			if not os.path.exists(isw_report_html_dir):
+				os.makedirs(isw_report_html_dir)
+
 			isw_report_html_file_name = f"isw___{date_str}.html"
 			with open(f"{isw_report_html_dir}/{isw_report_html_file_name}", "wb+") as f:
 				f.write(content)
