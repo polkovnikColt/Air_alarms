@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request
 import os
+import json
 
 app = Flask(__name__)
 
-prediction_data_path = "" 
-prediction_script_path = ""
+prediction_data_path = "prediction.json" 
+prediction_script_path = "./prediction.py"
 
 @app.route('/api/prediction/v1/predict', methods=['POST'])
 def predict_air_alarm():
@@ -12,15 +13,26 @@ def predict_air_alarm():
       data = request.json
       locations = data.get('locations')
 
-      response = []
-      with open(prediction_data_path) as f:
-          response = f.readlines()
+      f = open(prediction_data_path)
+  
+      data = json.load(f)
+  
+      f.close()
+
 
       if locations == "*":
-          return jsonify(response), 200
+          return jsonify(data), 200
       else:
-          response_filtered = [data for data in response if data["location"] in locations]
-          return jsonify(response_filtered), 200
+          regions_forecast_filtered = []
+          for alarm in data["regions_forecast"]:
+            print(alarm.keys())
+            if list(alarm.keys())[0] in locations:
+                 regions_forecast_filtered.append(alarm)
+          return jsonify({
+              "last_model_train_time": data['last_model_train_time'],  
+              "last_prediction_time": data["last_prediction_time"],
+              "regions_forecast": regions_forecast_filtered
+              }), 200
 
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
@@ -28,8 +40,9 @@ def predict_air_alarm():
 @app.route('/api/prediction/v1/update_forecast', methods=["GET"])
 def update_forecast():
     try:
-        os.system(prediction_script_path)
-        return jsonify({"message": "Updates"}), 200
+        cmd = os.path.join(os.getcwd(), "prediction.py")
+        os.system('{} {}'.format('python3', cmd))
+        return jsonify({"message": "Updated"}), 200
     except Exception as e:
         return jsonify({"Error": str(e)}), 500    
 

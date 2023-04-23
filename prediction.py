@@ -254,5 +254,19 @@ def get_prediction_for_next_12_hours(region, model, debug = False):
 
 	return schedule
 
-# print(get_prediction_for_date("Крим", "2023-04-24", MLP, True))
-print(get_prediction_for_next_12_hours("Крим", MLP, True))
+regions = df_regions["region_alt"]
+regions_en = df_regions["center_city_en"]
+    
+result = {
+	"last_model_train_time": datetime.utcnow().isoformat() + 'Z', 
+	"last_prediction_time": datetime.utcnow().isoformat() + 'Z', 
+	"regions_forecast": []
+	}	
+
+for i in range(0, len(regions)):
+	res = get_prediction_for_next_12_hours(regions[i], MLP)
+	temp_dict = {str(regions_en[i]): res}
+	result["regions_forecast"].append(temp_dict)
+
+with open("prediction.json", "w", encoding='utf-8') as outfile:
+    outfile.write(json.dumps(result))
