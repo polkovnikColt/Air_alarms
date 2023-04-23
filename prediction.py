@@ -70,7 +70,12 @@ weather_exclude = [
 	"hour_icon",
 	"hour_source",
 	"hour_stations",
-	"hour_feelslike"
+	"hour_feelslike",
+	"hour_sunrise",
+	"hour_sunset",
+	"hour_sunriseEpoch",
+	"hour_sunsetEpoch",
+	"hour_moonphase"
 ]
 
 fields_to_exclude = [
@@ -197,11 +202,11 @@ def get_prediction_for_date(region, date_str, model, debug = False):
 	word_count_vector = cv.transform([content_text_lemm])
 	tfidf_vector = tfidf.transform(word_count_vector)
 
-	df_work_v2 = weather_df_v2.drop(weather_exclude, axis=1)
-	df_work_v2 = df_work_v2.drop(fields_to_exclude, axis=1)
+	df_work_v2 = weather_df_v2.drop(weather_exclude, axis=1, errors='ignore')
+	df_work_v2 = df_work_v2.drop(fields_to_exclude, axis=1, errors='ignore')
 	df_work_v2["hour_conditions"] = df_work_v2["hour_conditions"].apply(lambda x: x.split(",")[0])
 	df_work_v2["hour_conditions_id"] = label_encoder.transform(df_work_v2["hour_conditions"])
-	df_work_v3 = df_work_v2.drop(tmp_fields_to_exclude, axis=1)
+	df_work_v3 = df_work_v2.drop(tmp_fields_to_exclude, axis=1, errors='ignore')
 
 	tfidf_matrix = tfidf_vector
 	for i in range(0, 23):
@@ -249,5 +254,5 @@ def get_prediction_for_next_12_hours(region, model, debug = False):
 
 	return schedule
 
-# print(get_prediction_for_date("Львівщина", "2023-04-25", MLP, True))
-print(get_prediction_for_next_12_hours("Львівщина", MLP, True))
+# print(get_prediction_for_date("Крим", "2023-04-24", MLP, True))
+print(get_prediction_for_next_12_hours("Крим", MLP, True))
