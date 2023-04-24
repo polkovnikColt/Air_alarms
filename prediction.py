@@ -226,7 +226,7 @@ def get_prediction_for_next_12_hours(region, model, debug = False):
 	ts_end = ts_start + timedelta(hours=12)
 	end_date = ts_end.strftime("%Y-%m-%d")
 
-	schedule = []
+	schedule = {}
 
 	if (start_date == end_date):
 		if debug:
@@ -236,7 +236,7 @@ def get_prediction_for_next_12_hours(region, model, debug = False):
 		time_forecast = today_forecast[ts_start.hour : ts_end.hour]
 
 		for idx, hour in enumerate(range(ts_start.hour, ts_end.hour)):
-			schedule.append({ f"{hour}:00": "false" if time_forecast[idx] == 0 else "true" })
+			schedule[f"{hour}:00"] = "false" if time_forecast[idx] == 0 else "true"
 	else:
 		if debug:
 			print(f"Preparing alarms forecast for two days: {ts_start} - {ts_end - timedelta(hours=1)}")
@@ -248,9 +248,9 @@ def get_prediction_for_next_12_hours(region, model, debug = False):
 		tomorrow_time_forecast = tomorrow_forecast[:ts_end.hour]
 
 		for idx, hour in enumerate(range(ts_start.hour, 24)):
-			schedule.append({ f"{hour}:00": "false" if today_time_forecast[idx] == 0 else "true" })
+			schedule[f"{hour}:00"] = "false" if today_time_forecast[idx] == 0 else "true"
 		for idx, hour in enumerate(range(0, ts_end.hour)):
-			schedule.append({ f"{hour}:00": "false" if tomorrow_time_forecast[idx] == 0 else "true" })
+			schedule[f"{hour}:00"] = "false" if tomorrow_time_forecast[idx] == 0 else "true"
 
 	return schedule
 
