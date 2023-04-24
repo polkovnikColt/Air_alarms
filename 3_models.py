@@ -5,14 +5,12 @@ import os
 import pathlib
 import scipy
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
-from sklearn.model_selection import GridSearchCV
 from sklearn import metrics
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import classification_report
@@ -20,11 +18,14 @@ from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import pickle
 
+from utils.metrics_evaluation import display_metrics
+
+
 param_grid_LR = {"C": [0.1, 1, 100], "penalty": ['l1', 'l2', 'elasticnet', None], 'random_state': [0, 1, 10],
                  'tol': [0.1, 1, 100]}
 param_grid_RFC = {'n_estimators': [0, 2, 5, 10],"criterion": ["gini", "entropy", "log_loss"],"max_features": ["sqrt", "log2", None]}
 
-param_grid_MLP = {"activation": ["identity", "logistic", "tanh", "relu"], "solver": ['lbfgs', 'sgd', 'adam'], "alpha": [0.0001, 0.001, 0.05, 0.1], 
+param_grid_MLP = {"activation": ["identity", "logistic", "tanh", "relu"], "solver": ['lbfgs', 'sgd', 'adam'], "alpha": [0.0001, 0.001, 0.05, 0.1],
 "max_iter": [200, 300, 400, 500]}
 
 data_path = '/home/vlad/Документы/sparse.npz'
@@ -41,134 +42,48 @@ for train_index, test_index in tss.split(df_all_data):
 
 # X_train, X_test, y_train, y_test = train_test_split(df_all_data, y, test_size=0.2, random_state=1, shuffle=True)
 
+
 # LogisticRegresion
-# LR = GridSearchCV(LogisticRegression(), param_grid_LR, refit = True, verbose = 3, n_jobs=-1)
+# LR = LogisticRegression()
 # LR.fit(X_train, y_train)
-# filename = 'data/models/LR.pkl'
-# pickle.dump(LR, open(filename, 'wb'))
-# Y_pred = LR.predict(X_test)
-# accuracy = metrics.accuracy_score(y_test, Y_pred)
-# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred)
-# auc_list = round(metrics.auc(fpr, tpr),2)
-# cm_list =  confusion_matrix(y_test, Y_pred)
-
-# fig = plt.figure(figsize = (15,15))
-# sub = fig.add_subplot(2,3,1).set_title("LogisticRegression")
-# cm_plot = sns.heatmap(cm_list, annot=True, cmap = "Blues_r")
-# cm_plot.set_xlabel("Predicted values")
-# cm_plot.set_ylabel("Actual values")
-# plt.show()
-
-# report = classification_report(y_test, Y_pred, target_names=["Actual", "Pred"])
-# print(report)
+# display_metrics(LR, X_test, y_test)
+# with open("./data/models/LR.pkl", "wb") as lr:
+#     pickle.dump(LR, lr)
 
 
 # DecisionTree
 # NB = DecisionTreeClassifier()
 # NB.fit(np.asarray(X_train.todense()), y_train)
-NB = pd.read_pickle("/home/vlad/Документы/material_for_practice/MP-1/SOFTWARE_DEVELOPMENT/Air_alarms/data/models/DTC.pkl")
-Y_pred_NB = NB.predict(X_test)
-accuracy_NB = metrics.accuracy_score(y_test, Y_pred_NB)
-fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_NB)
-auc_list_NB = round(metrics.auc(fpr, tpr),2)
-cm_list_NB =  confusion_matrix(y_test, Y_pred_NB)
-
-fig1 = plt.figure(figsize = (15,15))
-sub = fig1.add_subplot(2,3,1).set_title("DecisionTree")
-cm_plot1 = sns.heatmap(cm_list_NB, annot=True, cmap = "Blues_r")
-cm_plot1.set_xlabel("Predicted values")
-cm_plot1.set_ylabel("Actual values")
-plt.show()
-
-# report = classification_report(y_test, Y_pred_NB, target_names=["Actual", "Pred"])
-# print(report)
-
+# display_metrics(NB, X_test, y_test)
 # with open("./data/models/DTC.pkl", "wb") as DTC:
 #     pickle.dump(NB, DTC)
 
-# RFC
-# rfc = GridSearchCV(RandomForestClassifier(), param_grid_RFC, refit = True, verbose = 3, n_jobs=-1)
-# rfc.fit(X_train, y_train)
-# Y_pred_rfc = rfc.predict(X_test)
-# accuracy_rfc = metrics.accuracy_score(y_test, Y_pred_rfc)
-# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_rfc)
-# auc_list_rfc = round(metrics.auc(fpr, tpr),2)
-# cm_list_rfc =  confusion_matrix(y_test, Y_pred_rfc)
 
+# RFC
+# rfc = RandomForestClassifier()
+# rfc.fit(X_train, y_train)
+# display_metrics(rfc, X_test, y_test)
 # with open("./data/models/RFC.pkl", "wb") as RFC:
 #     pickle.dump(rfc, RFC)
 
-# fig2 = plt.figure(figsize = (15,15))
-# sub = fig2.add_subplot(2,3,1).set_title("RFC")
-# cm_plot2 = sns.heatmap(cm_list_rfc, annot=True, cmap = "Blues_r")
-# cm_plot2.set_xlabel("Predicted values")
-# cm_plot2.set_ylabel("Actual values")
-# plt.show()
-
-# report = classification_report(y_test, Y_pred_rfc, target_names=["Actual", "Pred"])
-# print(report)
 
 # #SGD
 # sgd = SGDClassifier(loss="hinge", penalty="l2", max_iter=5)
 # sgd.fit(X_train, y_train)
-# Y_pred_sgd = sgd.predict(X_test)
-# accuracy_sgd = metrics.accuracy_score(y_test, Y_pred_sgd)
-# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_sgd)
-# auc_list_sgd = round(metrics.auc(fpr, tpr),2)
-# cm_list_sgd =  confusion_matrix(y_test, Y_pred_sgd)
-
+# display_metrics(sgd, X_test, y_test)
 # with open("./data/models/SGD.pkl", "wb") as SGD:
 #     pickle.dump(sgd, SGD)
 
-# fig3 = plt.figure(figsize = (15,15))
-# sub = fig3.add_subplot(2,3,1).set_title("sgd")
-# cm_plot3 = sns.heatmap(cm_list_sgd, annot=True, cmap = "Blues_r")
-# cm_plot3.set_xlabel("Predicted values")
-# cm_plot3.set_ylabel("Actual values")
-# plt.show()
-
-# report = classification_report(y_test, Y_pred_sgd, target_names=["Actual", "Pred"])
-# print(report)
 
 # SVM
 # clf = SVC()
 # clf.fit(X_train, y_train)
-# Y_pred_svm = clf.predict(X_test)
-# accuracy_svm = metrics.accuracy_score(y_test, Y_pred_svm)
-# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_svm)
-# auc_list_svm = round(metrics.auc(fpr, tpr), 2)
-# cm_list_svm = confusion_matrix(y_test, Y_pred_svm)
-
-# with open("./data/models/SVM.pkl", "wb") as SVM:
-#     pickle.dump(clf, SVM)
-
-# fig4 = plt.figure(figsize=(15, 15))
-# sub = fig4.add_subplot(2, 3, 1).set_title("SVM")
-# cm_plot4 = sns.heatmap(cm_list_svm, annot=True, cmap="Blues_r")
-# cm_plot4.set_xlabel("Predicted values")
-# cm_plot4.set_ylabel("Actual values")
-# plt.show()
+# display_metrics(clf, X_test, y_test)
 
 
 # Multi-layer Perceptron
-# clf = GridSearchCV(MLPClassifier(), param_grid_MLP, refit = True, verbose = 3, n_jobs=-1)
-# clf.fit(X_train, y_train)
-# Y_pred_MLP = clf.predict(X_test)
-# accuracy_MLP = metrics.accuracy_score(y_test, Y_pred_MLP)
-# fpr, tpr, _thersholds = metrics.roc_curve(y_test, Y_pred_MLP)
-# auc_list_MLP = round(metrics.auc(fpr, tpr), 2)
-# cm_list_MLP = confusion_matrix(y_test, Y_pred_MLP)
-
+# mlp = MLPClassifier()
+# mlp.fit(X_train, y_train)
+# display_metrics(mlp, X_test, y_test)
 # with open("./data/models/MLP.pkl", "wb") as MLP:
-#     pickle.dump(clf, MLP)
-
-# fig5 = plt.figure(figsize=(15, 15))
-# sub = fig5.add_subplot(2, 3, 1).set_title("Multi-Layer Perceptron")
-# cm_plot5 = sns.heatmap(cm_list_MLP, annot=True, cmap="Blues_r")
-# cm_plot5.set_xlabel("Predicted values")
-# cm_plot5.set_ylabel("Actual values")
-# plt.show()
-
-# report = classification_report(
-#     y_test, Y_pred_MLP, target_names=["Actual", "Pred"])
-# print(report)
+#     pickle.dump(mlp, MLP)
