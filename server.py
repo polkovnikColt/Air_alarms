@@ -7,7 +7,7 @@ app = Flask(__name__)
 prediction_data_path = "prediction.json" 
 prediction_script_path = "./prediction.py"
 
-@app.route('/api/prediction/v1/predict', methods=['POST'])
+@app.route('/api/prediction/v1/predict', methods=['GET'])
 def predict_air_alarm():
     try:
       data = request.json
@@ -37,7 +37,7 @@ def predict_air_alarm():
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
 
-@app.route('/api/prediction/v1/update_forecast', methods=["GET"])
+@app.route('/api/prediction/v1/update_forecast', methods=["POST"])
 def update_forecast():
     try:
         cmd = os.path.join(os.getcwd(), "prediction.py")
